@@ -2,4 +2,5 @@
 requires = [
     "setuptools>=30.3.0",
     "wheel",
+    "pydantic>=1.10,<2.0"
 ]
