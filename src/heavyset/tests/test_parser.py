@@ -16,4 +16,6 @@ class TestParser(TestCase):
             json_data = inf.read()
             backup = HeavySetBackup.parse_raw(json_data)
 
-            assert backup.dict(exclude_none=True) == json.loads(json_data)
+            reexported = backup.json(exclude_none=True)
+
+            assert json.loads(reexported) == json.loads(json_data)

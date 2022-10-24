@@ -1,11 +1,11 @@
+from datetime import datetime
 from typing import Any
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
-UUID = str
 HEX_COLOR = str
-ISO_DATE = str
 SECONDS = int
 UNKNOWN = Any
 WEIGHT_KG = float
@@ -18,10 +18,10 @@ class Exercise(BaseModel):
     disabledStatisticsRaw: list[str]
     isArchived: bool
     exerciseVolumeGroups: list[UNKNOWN]
-    createdDate: ISO_DATE
+    createdDate: datetime
     trainingMaxUnit: str
     notes: str | None
-    lastPerformedDate: ISO_DATE
+    lastPerformedDate: datetime
     isAssisted: bool
     baseWeightUnit: str
     isTimed: bool
@@ -49,8 +49,8 @@ class RoutineGroup(BaseModel):
 
 class Routine(BaseModel):
     id: str
-    firstPerformedDate: ISO_DATE | None
-    lastPerformedDate: ISO_DATE | None
+    firstPerformedDate: datetime | None
+    lastPerformedDate: datetime | None
     isUserGenerated: bool
     name: str
     groups: list[RoutineGroup]
@@ -77,7 +77,7 @@ class Routines(BaseModel):
 class WorkoutSet(BaseModel):
     exercise: Exercise
     prescription: Prescription | None
-    updateDate: ISO_DATE
+    updateDate: datetime
     id: UUID
     reps: int
     isPersonalRecord: bool
@@ -91,8 +91,8 @@ class WorkoutSet(BaseModel):
 class Workout(BaseModel):
     id: UUID
     name: str
-    endDate: ISO_DATE
-    startDate: ISO_DATE
+    endDate: datetime
+    startDate: datetime
     bodyweight: WEIGHT_KG
     sets: list[WorkoutSet]
     hexCode: HEX_COLOR | None
@@ -138,3 +138,11 @@ class HeavySetBackup(BaseModel):
     volumeGroups: list[VolumeGroup]
     inventoryLocations: list[InventoryLocation]
 
+    class Config:
+        json_encoders = {
+            UUID: lambda val: str(val).upper(),
+            # Contrary to what the stdlib docs suggest, %Y
+            # will not in all situations return a 4-digit year
+            # so here we're just formatting our year manually.
+            datetime: lambda val: f'{val.year:04}' + val.strftime('-%m-%dT%H:%M:%SZ')
+        }

@@ -22,12 +22,3 @@ def write_comparable_jsons():
 
         with open('input.json', 'w') as outf:
             outf.write(original_formatted)
-
-        output = subprocess.check_output([
-            "diff",
-            "input.json",
-            "output.json"
-        ])
-
-        os.unlink('output.json')
-        os.unlink('input.json')
